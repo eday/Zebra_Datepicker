@@ -34,7 +34,7 @@
             //  the 7 days of the week; leave it FALSE to use the first 2 letters of a day's name as the abbreviation.
             //
             //  default is FALSE
-            days_abbr: false,
+            days_abbr: ["S", "M", "T", "W", "T", "F", "S"],
 
             //  the position of the date picker relative to the element it is attached to. note that, regardless of this
             //  setting, the date picker's position will be automatically adjusted to fit in the viewport, if needed.
@@ -102,7 +102,7 @@
             //  valid values are 0 to 6, Sunday to Saturday
             //
             //  default is 1, Monday
-            first_day_of_week: 1,
+            first_day_of_week: 0,
 
             //  format of the returned date
             //
@@ -158,14 +158,16 @@
             //  HTML to be used for the previous month/next month buttons
             //
             //  default is ['&#171;','&#187;']
-            header_navigation: ['&#171;', '&#187;'],
+            header_navigation: ['&lt;', '&gt;'],
 
+/*
             //  should the icon for opening the datepicker be inside the element?
             //  if set to FALSE, the icon will be placed to the right of the parent element, while if set to TRUE it will
             //  be placed to the right of the parent element, but *inside* the element itself
             //
             //  default is TRUE
             inside: true,
+*/
 
             //  the caption for the "Clear" button
             lang_clear_date: 'Clear date',
@@ -189,7 +191,7 @@
             //  the date picker to be placed automatically so that it is visible!
             //
             //  default is [5, -5]
-            offset: [5, -5],
+            offset: [0, 0],
 
             //  if set as a jQuery element with a Zebra_DatePicker attached, that particular date picker will use the
             //  current date picker's value as starting date
@@ -202,7 +204,7 @@
             //  if set to TRUE, a date can be set only through the date picker and cannot be entered manually
             //
             //  default is TRUE
-            readonly_element: true,
+            readonly_element: false,
 
             //  should days from previous and/or next month be selectable when visible?
             //  note that if the value of this property is set to TRUE, the value of "show_other_months" will be considered
@@ -227,10 +229,12 @@
             //  default is "0" (without quotes)
             show_clear_date: 0,
 
+/*
             //  should a calendar icon be added to the elements the plugin is attached to?
             //
             //  default is TRUE
-            show_icon: true,
+            show_icon: false,
+*/
 
             //  should days from previous and/or next month be visible?
             //
@@ -879,6 +883,7 @@
                 // if we're just creating the date picker
                 if (!update) {
 
+/*
                     // if a calendar icon should be added to the element the plugin is attached to, create the icon now
                     if (plugin.settings.show_icon) {
 
@@ -920,7 +925,7 @@
                         clickables = icon.add($element);
 
                     // if calendar icon is not visible, the date picker will open when clicking the element
-                    } else clickables = $element;
+                    } else */ clickables = $element;
 
                     // attach the click event to the clickable elements (icon and/or element)
                     clickables.bind('click', function(e) {
@@ -938,11 +943,14 @@
 
                     });
 
+/*
                     // if icon exists, inject it into the DOM, right after the parent element (and inside the wrapper)
                     if (undefined !== icon) icon.insertAfter($element);
+*/
 
                 }
 
+/*
                 // if calendar icon exists
                 if (undefined !== icon) {
 
@@ -993,6 +1001,7 @@
                     if ($element.attr('disabled') == 'disabled') icon.addClass('Zebra_DatePicker_Icon_Disabled');
 
                 }
+*/
 
             }
 
@@ -1009,6 +1018,7 @@
                 // hide the date picker
                 plugin.hide();
 
+/*
                 // if the icon is visible, update its position as the parent element might have changed position
                 if (icon !== undefined) {
 
@@ -1026,12 +1036,13 @@
                       }, 100);
 
                 }
+*/
 
             });
 
             // generate the container that will hold everything
             var html = '' +
-                '<div class="Zebra_DatePicker">' +
+                '<div class="datepicker">' +
                     '<table class="dp_header">' +
                         '<tr>' +
                             '<td class="dp_previous">' + plugin.settings.header_navigation[0] + '</td>' +
@@ -1293,6 +1304,7 @@
 
             });
 
+/*
             // if date picker is not always visible
             if (!plugin.settings.always_visible)
 
@@ -1311,7 +1323,7 @@
 
                             // if what's clicked is not inside the date picker
                             // hide the date picker
-                            if ($(e.target).parents().filter('.Zebra_DatePicker').length === 0) plugin.hide();
+                            if ($(e.target).parents().filter('.datepicker').length === 0) plugin.hide();
 
                         }
 
@@ -1328,6 +1340,7 @@
                     }
 
                 });
+*/
 
             // last thing is to pre-render some of the date picker right away
             manage_views();
@@ -1341,15 +1354,19 @@
          */
         plugin.destroy = function() {
 
+/*
             // remove the attached icon (if it exists)...
             if (undefined !== plugin.icon) plugin.icon.remove();
+*/
 
             // ...and the calendar
             plugin.datepicker.remove();
 
             // remove associated event handlers from the document
+/*
             $(document).unbind('keyup.Zebra_DatePicker');
             $(document).unbind('mousedown.Zebra_DatePicker');
+*/
             $(window).unbind('resize.Zebra_DatePicker');
 
             // remove association with the element
@@ -1441,7 +1458,8 @@
                     // relative to the element's top-right corner otherwise, to which the offsets given at initialization
                     // are added/subtracted
                     left = (undefined !== icon ? icon.offset().left + icon.outerWidth(true) : $element.offset().left + $element.outerWidth(true)) + plugin.settings.offset[0],
-                    top = (undefined !== icon ? icon.offset().top : $element.offset().top) - datepicker_height + plugin.settings.offset[1],
+                    //top = (undefined !== icon ? icon.offset().top : $element.offset().top) - datepicker_height + plugin.settings.offset[1],
+                    top = (undefined !== icon ? icon.offset().top : $element.offset().top) + $element.outerHeight() - datepicker_height + plugin.settings.offset[1],
 
                     // get browser window's width and height
                     window_width = $(window).width(),
@@ -2729,8 +2747,10 @@
                 // make "this" inside the callback function refer to the element the date picker is attached to
                 plugin.settings.onSelect.call($element, selected_value, year + '-' + str_pad(month + 1, 2) + '-' + str_pad(day, 2), default_date, $element, getWeekNumber(default_date));
                 
+/*
             // move focus to the element the plugin is attached to
             $element.focus();
+*/
 
         };
 
@@ -2941,7 +2961,7 @@
 
     };
 
-    $.fn.Zebra_DatePicker = function(options) {
+    $.fn.datePicker = function(options) {
 
         // iterate through all the elements to which we need to attach the date picker to
         return this.each(function() {
